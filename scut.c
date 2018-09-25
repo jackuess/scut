@@ -4,16 +4,18 @@
 
 #include "scut.h"
 
-char *t_error_message(const char *test_name,
+char *t_error_message(const char *file_name,
+                      long line_number,
+                      const char *test_name,
                       const char *first,
                       const char *second) {
-    static const char *format = "%s: %s != %s";
+    static const char *format = "%s: %s != %s\n\t%s:%ld";
     const size_t format_len = strlen(format);
     size_t message_len = strlen(test_name) + strlen(first) + strlen(second) +
-                         format_len;
+                         format_len + strlen(file_name);
     char *message = malloc(message_len);
 
-    snprintf(message, message_len, format, test_name, first, second);
+    snprintf(message, message_len, format, test_name, first, second, file_name, line_number);
     return message;
 }
 

@@ -3,20 +3,20 @@
 
 #include <string.h>
 
-#define ASSERT_(tr, success, first, second, func) \
+#define ASSERT_(tr, success, first, second, file, line, func) \
     do { \
         tr->n_assertions++; \
         if (!success) { \
-            tr_append_error_message(tr, t_error_message(func, first, second)); \
+            tr_append_error_message(tr, t_error_message(file, line, func, first, second)); \
             return; \
         } \
     } while (0)
 #define ASSERT_TRUE(tr, expression) \
-    ASSERT_(tr, (expression), #expression, "true", __func__)
+    ASSERT_(tr, (expression), #expression, "true", __FILE__, __LINE__, __func__)
 #define ASSERT_EQ(tr, first, second) \
-    ASSERT_(tr, (first == second), #first, #second, __func__)
+    ASSERT_(tr, (first == second), #first, #second, __FILE__, __LINE__, __func__)
 #define ASSERT_STR_EQ(tr, first, second) \
-    ASSERT_(tr, strcmp(first, second) == 0, #first, #second, __func__)
+    ASSERT_(tr, (strcmp(first, second) == 0), #first, #second, __FILE__, __LINE__, __func__)
 
 #define MAX_ERROR_MESSAGES 5
 struct TestResult {
@@ -26,7 +26,9 @@ struct TestResult {
     unsigned int n_error_messages;
 };
 
-char *t_error_message(const char *test_name,
+char *t_error_message(const char *file_name,
+                      long line_number,
+                      const char *test_name,
                       const char *first,
                       const char *second);
 struct TestResult *t_run(size_t n_test_functions,
