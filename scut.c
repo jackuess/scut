@@ -9,13 +9,15 @@ char *t_error_message(const char *file_name,
                       const char *test_name,
                       const char *first,
                       const char *second) {
-    static const char *format = "%s: %s != %s\n\t%s:%ld";
-    const size_t format_len = strlen(format);
-    size_t message_len = strlen(test_name) + strlen(first) + strlen(second) +
-                         format_len + strlen(file_name);
-    char *message = malloc(message_len);
+    static const char *format = "%s: `%s` doesn't equal `%s`\n\t%s:%ld";
+    size_t message_len = strlen(format);
+    char *message = malloc(message_len + 1);
 
-    snprintf(message, message_len, format, test_name, first, second, file_name, line_number);
+    int required_len = snprintf(message, message_len, format, test_name, first, second, file_name, line_number);
+    if (required_len >= 0 && (unsigned int)required_len > message_len) {
+        message = realloc(message, required_len + 1);
+        snprintf(message, required_len + 1, format, test_name, first, second, file_name, line_number);
+    }
     return message;
 }
 
